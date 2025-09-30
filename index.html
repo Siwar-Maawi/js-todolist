@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Gestion des tâches</title>
+  <style>
+    body{font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; max-width:640px;margin:40px auto;padding:0 16px}
+    .row{display:flex;gap:8px;margin-bottom:10px}
+    input[type="text"]{flex:1;padding:10px;font-size:16px}
+    button{padding:10px 14px;font-size:16px;cursor:pointer}
+    ul{margin-top:18px;padding-left:20px}
+    li{margin:6px 0;display:flex;justify-content:space-between;align-items:center}
+    .del{margin-left:12px;padding:4px 8px;border:0;background:#e74c3c;color:#fff;border-radius:6px;cursor:pointer}
+    .done{margin-left:12px;padding:4px 8px;border:0;background:#2ecc71;color:#fff;border-radius:6px;cursor:pointer}
+    .completed{text-decoration: line-through; color: gray;}
+    .counters{margin-top:20px;font-size:14px}
+  </style>
+</head>
+<body>
+  <h2>Gestion des tâches</h2>
+  <div class="row">
+    <input id="itemInput" type="text" placeholder="Tapez une nouvelle tâche...">
+    <button id="addBtn">Ajouter</button>
+  </div>
+  <div class="row">
+    <input id="searchInput" type="text" placeholder="Rechercher une tâche...">
+    <button id="clearAllBtn">Tout supprimer</button>
+  </div>
+
+  <ul id="list"></ul>
+
+  <div class="counters">
+    <span id="countInProgress">En cours : 0</span> | <span id="countCompleted">Terminées : 0</span>
+  </div>
+
+  <script>
+    // Tableau de tâches (chaque tâche est un objet {texte, terminee})
+    let tasks = [];
+
+    const input = document.getElementById('itemInput');
+    const addBtn = document.getElementById('addBtn');
+    const list = document.getElementById('list');
+    const searchInput = document.getElementById('searchInput');
+    const clearAllBtn = document.getElementById('clearAllBtn');
+    const countInProgress = document.getElementById('countInProgress');
+    const countCompleted = document.getElementById('countCompleted');
+
+    // Sauvegarde dans le localStorage
+    function saveTasks(){
+      localStorage.setItem('tasks', JSON.stringify(tasks));
+    }
+
+    // Chargement depuis le localStorage
+    function loadTasks(){
+      const data = localStorage.getItem('tasks');
+      if(data){
+        tasks = JSON.parse(data);
+      }
+    }
+
+    // Mettre à jour les compteurs
+    function updateCounters(){
+      const completed = tasks.filter(t => t.terminee).length;
+      const inProgress = tasks.length - completed;
+      countInProgress.textContent = `En cours : ${inProgress}`;
+      countCompleted.textContent = `Terminées : ${completed}`;
+    }
+
+    // Supprimer une tâche
+    function supprimerTache(index){
+      tasks.splice(index, 1);
+      saveTasks();
+      afficherTaches();
+    }
+
+    // Terminer une tâche
+    function terminerTache(index){
+      tasks[index].terminee = !tasks[index].terminee;
+      saveTasks();
+      afficherTaches();
+    }
+
+    // Ajouter une tâche
+    function ajouterTache(){
+      const value = input.value.trim();
+      if(!value) return;
+      tasks.push({ texte: value, terminee: false });
+      saveTasks();
+      afficherTaches();
+      input.value = '';
+      input.focus();
+    }
+
+    // Afficher les tâches avec filtre
+    function afficherTaches(){
+      list.innerHTML = '';
+      const search = searchInput.value.toLowerCase();
+      tasks.forEach((task, index) => {
+        if(task.texte.toLowerCase().includes(search)){
+          const li = document.createElement('li');
+          const span = document.createElement('span');
+          span.textContent = task.texte;
+          if(task.terminee){
+            span.classList.add('completed');
+          }
+
+          // Bouton Terminer
+          const doneBtn = document.createElement('button');
+          doneBtn.textContent = task.terminee ? 'Annuler' : 'Terminer';
+          doneBtn.className = 'done';
+          doneBtn.addEventListener('click', () => terminerTache(index));
+
+          // Bouton Supprimer
+          const delBtn = document.createElement('button');
+          delBtn.textContent = 'Supprimer';
+          delBtn.className = 'del';
+          delBtn.addEventListener('click', () => supprimerTache(index));
+
+          li.appendChild(span);
+          li.appendChild(doneBtn);
+          li.appendChild(delBtn);
+          list.appendChild(li);
+        }
+      });
+      updateCounters();
+    }
+
+    // Supprimer toutes les tâches
+    function toutSupprimer(){
+      tasks = [];
+      saveTasks();
+      afficherTaches();
+    }
+
+    // Événements
+    addBtn.addEventListener('click', ajouterTache);
+    input.addEventListener('keypress', (e) => {
+      if(e.key === 'Enter') ajouterTache();
+    });
+    searchInput.addEventListener('input', afficherTaches);
+    clearAllBtn.addEventListener('click', toutSupprimer);
+
+    // Initialisation
+    loadTasks();
+    afficherTaches();
+  </script>
+</body>
+</html>
