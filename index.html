@@ -1,79 +1,151 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Liste de tâches simple</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 400px;
-      margin: 40px auto;
-      padding: 0 16px;
-      background: #f0f4f8;
-    }
-    .row {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 10px;
-    }
-    input[type="text"] {
-      flex: 1;
-      padding: 10px;
-      font-size: 16px;
-      border: 2px solid #3498db;
-      border-radius: 6px;
-    }
-    button {
-      padding: 10px 14px;
-      font-size: 16px;
-      border: none;
-      border-radius: 6px;
-      background: #3498db;
-      color: #fff;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #2980b9;
-    }
-    ul {
-      padding-left: 20px;
-    }
-    li {
-      margin: 6px 0;
-    }
-  </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Gestion des tâches</title>
+ <style>
+  body {
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    max-width: 640px;
+    margin: 40px auto;
+    padding: 0 16px;
+    background: #f0f4f8;          /* couleur de fond douce */
+    color: #333;                   /* texte principal */
+  }
+
+  h2 {
+    text-align: center;
+    color: #2c3e50;               /* titre en bleu foncé */
+  }
+
+  .row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  input[type="text"] {
+    flex: 1;
+    padding: 10px;
+    font-size: 16px;
+    border: 2px solid #3498db;   /* contour bleu */
+    border-radius: 6px;
+    outline: none;
+  }
+
+  input[type="text"]:focus {
+    border-color: #2980b9;       /* contour bleu foncé au focus */
+  }
+
+  button {
+    padding: 10px 14px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 6px;
+    transition: background 0.3s;
+  }
+
+  #addBtn {
+    background: #3498db;
+    color: #fff;
+  }
+  #addBtn:hover {
+    background: #2980b9;
+  }
+
+  #clearAllBtn {
+    background: #e74c3c;
+    color: #fff;
+  }
+  #clearAllBtn:hover {
+    background: #c0392b;
+  }
+
+  ul {
+    margin-top: 18px;
+    padding-left: 20px;
+  }
+
+  li {
+    margin: 6px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-radius: 6px;
+    background: #fff;             /* fond blanc pour chaque tâche */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: background 0.3s;
+  }
+
+  li:hover {
+    background: #ecf0f1;         /* léger survol */
+  }
+
+  .del {
+    margin-left: 12px;
+    padding: 4px 8px;
+    border: 0;
+    background: #e74c3c;
+    color: #fff;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .del:hover {
+    background: #c0392b;
+  }
+
+  .done {
+    margin-left: 12px;
+    padding: 4px 8px;
+    border: 0;
+    background: #2ecc71;
+    color: #fff;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .done:hover {
+    background: #27ae60;
+  }
+
+  .completed {
+    text-decoration: line-through;
+    color: gray;
+  }
+
+  .counters {
+    margin-top: 20px;
+    font-size: 14px;
+    text-align: center;
+  }
+</style>
+
 </head>
 <body>
-  <h2>Liste de tâches</h2>
+  <h2>Gestion des tâches</h2>
   <div class="row">
-    <input id="itemInput" type="text" placeholder="Ajouter une tâche...">
+    <input id="itemInput" type="text" placeholder="Tapez une nouvelle tâche...">
     <button id="addBtn">Ajouter</button>
+  </div>
+  <div class="row">
+    <input id="searchInput" type="text" placeholder="Rechercher une tâche...">
+    <button id="clearAllBtn">Tout supprimer</button>
   </div>
 
   <ul id="list"></ul>
 
+  <div class="counters">
+    <span id="countInProgress">En cours : 0</span> | <span id="countCompleted">Terminées : 0</span>
+  </div>
+
   <script>
-    const input = document.getElementById('itemInput');
-    const addBtn = document.getElementById('addBtn');
-    const list = document.getElementById('list');
+    // Tableau de tâches (chaque tâche est un objet {texte, terminee})
+    let tasks = [];
 
-    function ajouterTache() {
-      const value = input.value.trim();
-      if(!value) return;
-
-      const li = document.createElement('li');
-      li.textContent = value;
-      list.appendChild(li);
-
-      input.value = '';
-      input.focus();
-    }
-
-    addBtn.addEventListener('click', ajouterTache);
-    input.addEventListener('keypress', e => {
-      if(e.key === 'Enter') ajouterTache();
-    });
   </script>
 </body>
 </html>
